@@ -106,10 +106,27 @@ int main() {
   int count = datA.checkCompatibility(datD, 1);
   cout << "count: " << count << endl;
   Data datAB = datA.averageDatasets(datB);
-  cout << "measurement of experiment AB in bin 27: " << datAB.measurement(27)
-       << endl;
+  Data datCD = datC.averageDatasets(datD);
+  Data datABCD = datAB.averageDatasets(datCD);
   
-  int c2 = datAB.checkCompatibility(datC, 1);
-  cout << "c2: " << c2 << endl;
+  cout << "for datA, " << datA.checkCompatibility(datA, 2) << " datapoints differ more than 2 std's" << endl;
+  cout << "for datB, " << datB.checkCompatibility(datA, 2) << " datapoints differ more than 2 std's" << endl;
+  cout << "for datC, " << datC.checkCompatibility(datA, 2) << " datapoints differ more than 2 std's" << endl;
+  cout << "for datD, " << datD.checkCompatibility(datA, 2) << " datapoints differ more than 2 std's" << endl;
+
+  cout << "for datA, " << datA.checkCompatibility(datA, 3) << " datapoints differ more than 3 std's" << endl;
+  cout << "for datB, " << datB.checkCompatibility(datA, 3) << " datapoints differ more than 3 std's" << endl;
+  cout << "for datC, " << datC.checkCompatibility(datA, 3) << " datapoints differ more than 3 std's" << endl;
+  cout << "for datD, " << datD.checkCompatibility(datA, 3) << " datapoints differ more than 3 std's" << endl;
+
+
+  
+  double chi_DatA = datA.chi2perNdf();
+  cout << "chi2 DatA: " << datA.chi2perNdf() << endl;
+  cout << "chi2 DatB: " << datB.chi2perNdf() << endl;
+  cout << "chi2 DatC: " << datC.chi2perNdf() << endl;
+  cout << "chi2 DatD: " << datD.chi2perNdf() << endl;
+  cout << "chi2 DatABCD: " << datABCD.chi2perNdf() << endl;
+
   return 0;
 }

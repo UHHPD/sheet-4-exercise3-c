@@ -87,4 +87,26 @@ int Data::checkCompatibility(const Data& in, int n) {
   return count; // #count == #of data points incompatible within n std's
 }
 
+double Data::fitFunction(double x) {
+  double alpha = 0.005;
+  double beta = -0.00001;
+  double gamma = 0.08;
+  double delta = 0.015;
+  double f = alpha + beta*x + gamma*exp(-delta*x);
+  return f;
+}
+
+double Data::chi2perNdf() {
+  double chi2 = 0;
+  for(int i=0; i<size(); i++) {
+    double y_meas = measurement(i);
+    double y_pred = fitFunction(binCenter(i));
+    double error_exp = error(i);
+    double summand = pow(y_meas-y_pred, 2) / pow(error_exp, 2);
+    chi2 += summand;
+  }
+  double ndf = 52;
+  return chi2/ndf;
+}
+
 void Data::assertSizes() { assert(m_data.size() + 1 == m_bins.size()); }

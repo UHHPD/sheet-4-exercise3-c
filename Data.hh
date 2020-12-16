@@ -16,6 +16,8 @@ class Data {
   double error(int i) const { return m_errors[i]; }
   int checkCompatibility(const Data& in, int n);
   Data averageDatasets(const Data& in);
+  double fitFunction(double x);
+  double chi2perNdf();
 
  private:
   Data() {}  // disallow empty data set
