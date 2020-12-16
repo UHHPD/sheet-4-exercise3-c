@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cassert>
 #include <stdexcept>
+#include <cmath>
 
 using namespace std;
 
@@ -31,11 +32,59 @@ Data::Data(const std::string& filename) {
     file >> entries;
     m_data.push_back(entries);
   }
+  // read in uncertainty from file: m_siz bin errors
+  for (int i = 0; i < size; ++i) {
+    double uncertainties;
+    file >> uncertainties;
+    m_errors.push_back(uncertainties);
+  }
 
   // done! close the file
   file.close();
 
   assertSizes();
 };
+
+
+Data Data::averageDatasets(const Data& in) {
+  if(checkCompatibility(in,3)>5) throw runtime_error("Datasets not compatible!!!"); // at what point do we define two datasets to be compatible?
+  // I'm gonna assume that all datasets have the same size and bin structure
+  Data out;
+  out.m_bins = in.m_bins;
+
+  for(int i =0; i<size(); i++) {
+    double w1 = error(i);
+    double w2 = in.error(i);
+    double y1 = measurement(i);
+    double y2 = in.measurement(i);
+
+    double y = (w1*y1+w2*y2)/(w1+w2);
+    double dy = 1/sqrt(w1+w2);
+    //cout << "y: " << y << endl;
+    //cout << "dy: " << dy << endl;
+    out.m_data.push_back(y);
+    out.m_errors.push_back(dy);
+  }
+  
+  return out;
+}
+
+
+int Data::checkCompatibility(const Data& in, int n) {
+  int count = 0;
+  for(int i = 0; i < size(); i++) {
+    double uncert_this = error(i);
+    double uncert_that = in.error(i);
+    double uncert = sqrt(pow(error(i),2)+pow(in.error(i),2));
+    double deltaY = abs(measurement(i)-in.measurement(i));
+    //cout << "uncert: " << uncert << endl;
+    //cout << "deltaY: " << deltaY << endl;
+    bool compatible = (deltaY < n*uncert);
+    //cout << "deltaY>" << n << "*uncert? " << compatible << endl;
+    if(!compatible) count++;
+  }
+
+  return count; // #count == #of data points incompatible within n std's
+}
 
 void Data::assertSizes() { assert(m_data.size() + 1 == m_bins.size()); }
