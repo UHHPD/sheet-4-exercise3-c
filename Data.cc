@@ -53,8 +53,8 @@ Data Data::averageDatasets(const Data& in) {
   out.m_bins = in.m_bins;
 
   for(int i =0; i<size(); i++) {
-    double w1 = error(i);
-    double w2 = in.error(i);
+    double w1 = 1/pow(error(i),2);
+    double w2 = 1/pow(in.error(i),2);
     double y1 = measurement(i);
     double y2 = in.measurement(i);
 
